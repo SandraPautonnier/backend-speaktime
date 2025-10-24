@@ -1,26 +1,57 @@
-import express from "express";
-import dotenv from "dotenv";
-import cors from "cors";
-import connectDB from "./config/db.js";
-import authRoutes from "./routes/authRoutes.js";
-import meetingRoutes from "./routes/meetingRoutes.js";
-import groupRoutes from "./routes/groupRoutes.js";
+// server.js import dependances
+import http from 'http';
+import app from './app.js';
 
-dotenv.config();
-const app = express();
+// Normalisation du port
+const normalizePort = (val) => {
+  const port = parseInt(val, 10);
 
-// Middleware
-app.use(cors());
-app.use(express.json());
+  if (isNaN(port)) {
+    return val;
+  }
+  if (port >= 0) {
+    return port;
+  }
+  return false;
+};
 
-// Connexion à la base MongoDB
-connectDB();
+// Choix du port
+const port = normalizePort(process.env.PORT || '5000');
+app.set('port', port);
 
-// Routes
-app.use("/api/auth", authRoutes);
-app.use("/api/meetings", meetingRoutes);
-app.use("/api/groups", groupRoutes);
+// Gestion des erreurs du serveur
+const errorHandler = (error) => {
+  if (error.syscall !== 'listen') {
+    throw error;
+  }
 
-// Lancement du serveur
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 Serveur lancé sur le port ${PORT}`));
+  const address = server.address();
+  const bind = typeof address === 'string' ? 'pipe ' + address : 'port: ' + port;
+
+  switch (error.code) {
+    case 'EACCES':
+      console.error(bind + ' requires elevated privileges.');
+      process.exit(1);
+      break;
+    case 'EADDRINUSE':
+      console.error(bind + ' is already in use.');
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
+};
+
+// Création du serveur HTTP et écoute le serveur
+const server = http.createServer(app);
+
+// Événements du serveur
+server.on('error', errorHandler);
+server.on('listening', () => {
+  const address = server.address();
+  const bind = typeof address === 'string' ? 'pipe ' + address : 'port ' + port;
+  console.log(`✅ Server is listening on ${bind}`);
+});
+
+// Démarrage du serveur
+server.listen(port);
