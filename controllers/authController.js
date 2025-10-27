@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken";
 // Inscription
 export const register = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { username, email, password } = req.body;
 
     // Vérifie si l'utilisateur existe déjà
     const existingUser = await User.findOne({ email });
@@ -15,7 +15,7 @@ export const register = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Crée le nouvel utilisateur
-    const newUser = new User({ name, email, password: hashedPassword });
+    const newUser = new User({ username, email, password: hashedPassword });
     await newUser.save();
 
     res.status(201).json({ message: "Compte créé avec succès !" });
@@ -41,7 +41,7 @@ export const login = async (req, res) => {
     res.status(200).json({
       message: "Connexion réussie",
       token,
-      user: { id: user._id, name: user.name, email: user.email },
+      user: { id: user._id, email: user.email },
     });
   } catch (error) {
     res.status(500).json({ message: "Erreur serveur", error });
