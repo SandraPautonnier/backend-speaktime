@@ -47,3 +47,46 @@ export const login = async (req, res) => {
     res.status(500).json({ message: "Erreur serveur", error });
   }
 };
+
+// Modification d'un utilisateur
+export const updateUser = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const { username, email, password } = req.body;
+
+    const user = await User.findById(userId);
+    if (!user)
+      return res.status(404).json({ message: "Utilisateur non trouvé." });
+
+    // Mise à jour des champs
+    if (username) user.username = username;
+    if (email) user.email = email;
+
+    // Si le mot de passe est fourni, on le re-hash
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      user.password = hashedPassword;
+    }
+
+    await user.save();
+    res.status(200).json({ message: "Utilisateur mis à jour avec succès !" });
+  } catch (error) {
+    res.status(500).json({ message: "Erreur serveur", error });
+  }
+};
+
+// Suppression d'un utilisateur
+export const deleteUser = async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+    const user = await User.findById(userId);
+    if (!user)
+      return res.status(404).json({ message: "Utilisateur non trouvé." });
+
+    await user.deleteOne();
+    res.status(200).json({ message: "Utilisateur supprimé avec succès." });
+  } catch (error) {
+    res.status(500).json({ message: "Erreur serveur", error });
+  }
+};
