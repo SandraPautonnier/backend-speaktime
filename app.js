@@ -1,11 +1,11 @@
-// app.js import dependances
+﻿// app.js import dependances
 import express from "express";
 import cors from "cors";
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import groupRoutes from "./routes/groupRoutes.js";
-// import meetingRoutes from './routes/meetingRoutes.js';
+import meetingRoutes from "./routes/meetingRoutes.js";
 
 const app = express();
 
@@ -18,12 +18,11 @@ connectDB();
 
 // Routes
 app.get("/", (req, res) => {
-  res.send("API SpeakTime opérationnelle 🚀");
+  res.send("API SpeakTime opérationnelle ");
 });
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/groups", groupRoutes);
-/*app.use("/api/meetings", meetingRoutes);
- */
+app.use("/api/meetings", meetingRoutes);
 
 export default app;
