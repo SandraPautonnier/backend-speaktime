@@ -29,10 +29,13 @@ export const createMeeting = async (req, res) => {
       title,
       date: now,
       duration,
-      participants: participants.map((name) => ({
-        name,
-        speakingTime: 0, // Sera rempli plus tard
-      })),
+      participants: participants.map((p) => {
+        // Gérer les deux formats : string ou objet {name, speakingTime}
+        if (typeof p === "string") {
+          return { name: p, speakingTime: 0 };
+        }
+        return { name: p.name, speakingTime: p.speakingTime || 0 };
+      }),
       notes: "",
     });
 
@@ -137,4 +140,5 @@ export const deleteMeeting = async (req, res) => {
     res.status(500).json({ message: "Erreur serveur", error: error.message });
   }
 };
+
 
