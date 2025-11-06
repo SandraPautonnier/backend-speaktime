@@ -21,7 +21,7 @@ app.get("/", (req, res) => {
   res.send("API SpeakTime opérationnelle ");
 });
 app.use("/api/auth", authRoutes);
-app.use("/api/user", userRoutes);
+app.use("/api/users", userRoutes);
 app.use("/api/groups", groupRoutes);
 app.use("/api/meetings", meetingRoutes);
 
