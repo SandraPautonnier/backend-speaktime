@@ -35,4 +35,17 @@ router.post("/register", registerLimiter, register);
 router.post("/login", loginLimiter, login);
 router.post("/refresh", protect, refreshToken);
 
+// Route de test pour vérifier que les routes auth fonctionnent
+router.get("/test", (req, res) => {
+  res.status(200).json({
+    message: "Routes authentification fonctionnelles ✅",
+    routes: [
+      "POST /api/auth/register",
+      "POST /api/auth/login",
+      "POST /api/auth/refresh (protégée)",
+      "GET /api/auth/test",
+    ],
+  });
+});
+
 export default router;
