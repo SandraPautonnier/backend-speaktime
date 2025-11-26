@@ -7,7 +7,8 @@ export const getUsers = async (req, res) => {
     const users = await User.find().select("-password"); // on enlève le mot de passe
     res.status(200).json(users);
   } catch (error) {
-    res.status(500).json({ message: "Erreur serveur", error });
+    console.error("Erreur lors de la récupération des utilisateurs :", error);
+    res.status(500).json({ message: "Erreur serveur." });
   }
 };
 
@@ -19,15 +20,19 @@ export const getUserById = async (req, res) => {
 
     // Vérifier que l'utilisateur accède à son propre profil
     if (userId.toString() !== requestedId.toString()) {
-      return res.status(403).json({ message: "Accès non autorisé à ce profil." });
+      return res
+        .status(403)
+        .json({ message: "Accès non autorisé à ce profil." });
     }
 
     const user = await User.findById(requestedId).select("-password");
-    if (!user) return res.status(404).json({ message: "Utilisateur non trouvé" });
+    if (!user)
+      return res.status(404).json({ message: "Utilisateur non trouvé" });
 
     res.status(200).json(user);
   } catch (error) {
-    res.status(500).json({ message: "Erreur serveur", error });
+    console.error("Erreur lors de la récupération de l'utilisateur :", error);
+    res.status(500).json({ message: "Erreur serveur." });
   }
 };
 
@@ -39,13 +44,19 @@ export const updateUser = async (req, res) => {
 
     // Vérifier que l'utilisateur modifie son propre compte
     if (userId.toString() !== requestedId.toString()) {
-      return res.status(403).json({ message: "Accès non autorisé. Vous ne pouvez modifier que votre propre compte." });
+      return res
+        .status(403)
+        .json({
+          message:
+            "Accès non autorisé. Vous ne pouvez modifier que votre propre compte.",
+        });
     }
 
     const { username, email, password } = req.body;
     const user = await User.findById(requestedId);
 
-    if (!user) return res.status(404).json({ message: "Utilisateur non trouvé" });
+    if (!user)
+      return res.status(404).json({ message: "Utilisateur non trouvé" });
 
     if (username) user.username = username;
     if (email) user.email = email;
@@ -69,11 +80,17 @@ export const deleteUser = async (req, res) => {
 
     // Vérifier que l'utilisateur supprime son propre compte
     if (userId.toString() !== requestedId.toString()) {
-      return res.status(403).json({ message: "Accès non autorisé. Vous ne pouvez supprimer que votre propre compte." });
+      return res
+        .status(403)
+        .json({
+          message:
+            "Accès non autorisé. Vous ne pouvez supprimer que votre propre compte.",
+        });
     }
 
     const user = await User.findById(requestedId);
-    if (!user) return res.status(404).json({ message: "Utilisateur non trouvé" });
+    if (!user)
+      return res.status(404).json({ message: "Utilisateur non trouvé" });
 
     await user.deleteOne();
     res.status(200).json({ message: "Utilisateur supprimé avec succès." });

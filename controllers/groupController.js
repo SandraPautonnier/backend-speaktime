@@ -24,7 +24,8 @@ export const createGroup = async (req, res) => {
       .status(201)
       .json({ message: "Groupe créé avec succès !", group: newGroup });
   } catch (error) {
-    res.status(500).json({ message: "Erreur serveur", error: error.message });
+    console.error("Erreur lors de la création du groupe :", error);
+    res.status(500).json({ message: "Erreur serveur." });
   }
 };
 
@@ -35,7 +36,8 @@ export const getAllGroups = async (req, res) => {
     const groups = await Group.find({ userId }); //  Filtrer par userId
     res.status(200).json({ groups });
   } catch (error) {
-    res.status(500).json({ message: "Erreur serveur", error: error.message });
+    console.error("Erreur lors de la récupération des groupes :", error);
+    res.status(500).json({ message: "Erreur serveur." });
   }
 };
 
@@ -52,12 +54,15 @@ export const getGroupById = async (req, res) => {
 
     //  Vérifier que le groupe appartient à l'utilisateur
     if (group.userId.toString() !== userId.toString()) {
-      return res.status(403).json({ message: "Accès non autorisé à ce groupe." });
+      return res
+        .status(403)
+        .json({ message: "Accès non autorisé à ce groupe." });
     }
 
     res.status(200).json({ group });
   } catch (error) {
-    res.status(500).json({ message: "Erreur serveur", error: error.message });
+    console.error("Erreur lors de la récupération du groupe :", error);
+    res.status(500).json({ message: "Erreur serveur." });
   }
 };
 
@@ -79,7 +84,9 @@ export const updateGroupName = async (req, res) => {
 
     //  Vérifier l'ownership
     if (group.userId.toString() !== userId.toString()) {
-      return res.status(403).json({ message: "Accès non autorisé à ce groupe." });
+      return res
+        .status(403)
+        .json({ message: "Accès non autorisé à ce groupe." });
     }
 
     const updatedGroup = await Group.findByIdAndUpdate(
@@ -92,7 +99,8 @@ export const updateGroupName = async (req, res) => {
       .status(200)
       .json({ message: "Nom du groupe mis à jour !", group: updatedGroup });
   } catch (error) {
-    res.status(500).json({ message: "Erreur serveur", error: error.message });
+    console.error("Erreur lors de la mise à jour du nom du groupe :", error);
+    res.status(500).json({ message: "Erreur serveur." });
   }
 };
 
@@ -114,7 +122,9 @@ export const updateGroupDescription = async (req, res) => {
 
     //  Vérifier l'ownership
     if (group.userId.toString() !== userId.toString()) {
-      return res.status(403).json({ message: "Accès non autorisé à ce groupe." });
+      return res
+        .status(403)
+        .json({ message: "Accès non autorisé à ce groupe." });
     }
 
     const updatedGroup = await Group.findByIdAndUpdate(
@@ -123,12 +133,10 @@ export const updateGroupDescription = async (req, res) => {
       { new: true, runValidators: true }
     );
 
-    res
-      .status(200)
-      .json({
-        message: "Description du groupe mise à jour !",
-        group: updatedGroup,
-      });
+    res.status(200).json({
+      message: "Description du groupe mise à jour !",
+      group: updatedGroup,
+    });
   } catch (error) {
     res.status(500).json({ message: "Erreur serveur", error: error.message });
   }
@@ -154,7 +162,9 @@ export const addMembersToGroup = async (req, res) => {
 
     //  Vérifier l'ownership
     if (group.userId.toString() !== userId.toString()) {
-      return res.status(403).json({ message: "Accès non autorisé à ce groupe." });
+      return res
+        .status(403)
+        .json({ message: "Accès non autorisé à ce groupe." });
     }
 
     // Ajoute les nouveaux membres sans doublons
@@ -164,7 +174,8 @@ export const addMembersToGroup = async (req, res) => {
     await group.save();
     res.status(200).json({ message: "Membres ajoutés au groupe !", group });
   } catch (error) {
-    res.status(500).json({ message: "Erreur serveur", error: error.message });
+    console.error("Erreur lors de l'ajout de membres :", error);
+    res.status(500).json({ message: "Erreur serveur." });
   }
 };
 
@@ -188,7 +199,9 @@ export const removeMembersFromGroup = async (req, res) => {
 
     //  Vérifier l'ownership
     if (group.userId.toString() !== userId.toString()) {
-      return res.status(403).json({ message: "Accès non autorisé à ce groupe." });
+      return res
+        .status(403)
+        .json({ message: "Accès non autorisé à ce groupe." });
     }
 
     // Retire les membres spécifiés
@@ -197,7 +210,8 @@ export const removeMembersFromGroup = async (req, res) => {
     await group.save();
     res.status(200).json({ message: "Membres retirés du groupe !", group });
   } catch (error) {
-    res.status(500).json({ message: "Erreur serveur", error: error.message });
+    console.error("Erreur lors de la suppression de membres :", error);
+    res.status(500).json({ message: "Erreur serveur." });
   }
 };
 
@@ -214,12 +228,15 @@ export const getGroupMembers = async (req, res) => {
 
     //  Vérifier l'ownership
     if (group.userId.toString() !== userId.toString()) {
-      return res.status(403).json({ message: "Accès non autorisé à ce groupe." });
+      return res
+        .status(403)
+        .json({ message: "Accès non autorisé à ce groupe." });
     }
 
     res.status(200).json({ members: group.members, groupName: group.name });
   } catch (error) {
-    res.status(500).json({ message: "Erreur serveur", error: error.message });
+    console.error("Erreur lors de la récupération des membres :", error);
+    res.status(500).json({ message: "Erreur serveur." });
   }
 };
 
@@ -236,13 +253,16 @@ export const deleteGroup = async (req, res) => {
 
     //  Vérifier l'ownership
     if (group.userId.toString() !== userId.toString()) {
-      return res.status(403).json({ message: "Accès non autorisé à ce groupe." });
+      return res
+        .status(403)
+        .json({ message: "Accès non autorisé à ce groupe." });
     }
 
     const deletedGroup = await Group.findByIdAndDelete(id);
 
     res.status(200).json({ message: "Groupe supprimé avec succès !" });
   } catch (error) {
-    res.status(500).json({ message: "Erreur serveur", error: error.message });
+    console.error("Erreur lors de la suppression du groupe :", error);
+    res.status(500).json({ message: "Erreur serveur." });
   }
 };

@@ -9,9 +9,18 @@ import meetingRoutes from "./routes/meetingRoutes.js";
 
 const app = express();
 
+// Configuration CORS stricte
+const corsOptions = {
+  origin: process.env.FRONTEND_URL || "http://localhost:3000",
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  maxAge: 3600,
+};
+
 // Middlewares
 app.use(express.json());
-app.use(cors());
+app.use(cors(corsOptions));
 
 // Connexion à la base MongoDB
 connectDB();

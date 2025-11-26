@@ -7,12 +7,18 @@ export const createMeeting = async (req, res) => {
     const { groupId, participants, duration } = req.body;
 
     // Validation
-    if (!participants || !Array.isArray(participants) || participants.length === 0) {
+    if (
+      !participants ||
+      !Array.isArray(participants) ||
+      participants.length === 0
+    ) {
       return res.status(400).json({ message: "Les participants sont requis." });
     }
 
     if (!duration || duration <= 0) {
-      return res.status(400).json({ message: "La dur�e doit �tre sup�rieure � 0." });
+      return res
+        .status(400)
+        .json({ message: "La dur�e doit �tre sup�rieure � 0." });
     }
 
     // G�n�rer le titre : "R�union du 05/11/2025"
@@ -30,7 +36,7 @@ export const createMeeting = async (req, res) => {
       date: now,
       duration,
       participants: participants.map((p) => {
-        // G�rer les deux formats : string ou objet {name, speakingTime}
+        // G�rer les deux formats : string ou objet {name, speakingTime}
         if (typeof p === "string") {
           return { name: p, speakingTime: 0 };
         }
@@ -40,9 +46,12 @@ export const createMeeting = async (req, res) => {
     });
 
     await newMeeting.save();
-    res.status(201).json({ message: "R�union cr��e avec succ�s !", meeting: newMeeting });
+    res
+      .status(201)
+      .json({ message: "Réunion créée avec succès !", meeting: newMeeting });
   } catch (error) {
-    res.status(500).json({ message: "Erreur serveur", error: error.message });
+    console.error("Erreur lors de la création de la réunion :", error);
+    res.status(500).json({ message: "Erreur serveur." });
   }
 };
 
@@ -75,7 +84,9 @@ export const getMeetingById = async (req, res) => {
 
     // V�rifier que la r�union appartient � l'utilisateur
     if (meeting.userId.toString() !== userId.toString()) {
-      return res.status(403).json({ message: "Acc�s non autoris� � cette r�union." });
+      return res
+        .status(403)
+        .json({ message: "Acc�s non autoris� � cette r�union." });
     }
 
     res.status(200).json({ meeting });
@@ -92,7 +103,9 @@ export const updateMeetingParticipants = async (req, res) => {
     const { participants } = req.body;
 
     if (!participants || !Array.isArray(participants)) {
-      return res.status(400).json({ message: "Les participants doivent �tre un tableau." });
+      return res
+        .status(400)
+        .json({ message: "Les participants doivent �tre un tableau." });
     }
 
     const meeting = await Meeting.findById(id);
@@ -103,7 +116,9 @@ export const updateMeetingParticipants = async (req, res) => {
 
     // V�rifier l'ownership
     if (meeting.userId.toString() !== userId.toString()) {
-      return res.status(403).json({ message: "Acc�s non autoris� � cette r�union." });
+      return res
+        .status(403)
+        .json({ message: "Acc�s non autoris� � cette r�union." });
     }
 
     // Mettre � jour les temps de parole
@@ -130,7 +145,9 @@ export const deleteMeeting = async (req, res) => {
 
     // V�rifier l'ownership
     if (meeting.userId.toString() !== userId.toString()) {
-      return res.status(403).json({ message: "Acc�s non autoris� � cette r�union." });
+      return res
+        .status(403)
+        .json({ message: "Acc�s non autoris� � cette r�union." });
     }
 
     await Meeting.findByIdAndDelete(id);
@@ -140,5 +157,3 @@ export const deleteMeeting = async (req, res) => {
     res.status(500).json({ message: "Erreur serveur", error: error.message });
   }
 };
-
-
